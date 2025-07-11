@@ -47,33 +47,6 @@ A comprehensive, production-ready chatbot solution specifically designed for AI 
 - npm or yarn
 - Modern browser with ES2020 support
 
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/YOUR_USERNAME/aivio-chatbot-product.git
-cd aivio-chatbot-product
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Open in browser
-# http://localhost:5173
-```
-
-### Build for Production
-
-```bash
-# Build all versions
-npm run build
-
-# Build specific versions
-npm run build:cdn    # For CDN distribution
-npm run build:npm    # For NPM package
-```
 
 ## 📁 Project Structure
 
@@ -266,40 +239,7 @@ gtag('config', 'GA_MEASUREMENT_ID', {
 - **Memory Usage**: < 10MB average
 - **CPU Usage**: < 5% on modern devices
 
-## 🌍 Browser Support
 
-| Browser | Version | Support |
-|---------|---------|---------|
-| Chrome  | 80+     | ✅ Full |
-| Firefox | 75+     | ✅ Full |
-| Safari  | 13+     | ✅ Full |
-| Edge    | 80+     | ✅ Full |
-| IE      | 11      | ❌ None |
-
-## 🛠 Development
-
-### Setup Development Environment
-
-```bash
-# Clone repository
-git clone https://github.com/YOUR_USERNAME/aivio-chatbot-product.git
-cd aivio-chatbot-product
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Run tests
-npm test
-
-# Lint code
-npm run lint
-
-# Type checking
-npm run type-check
-```
 
 ### Available Scripts
 
@@ -389,37 +329,10 @@ interface TrendInsight {
 
 ## 💰 Commercial License
 
-### Pricing Tiers
-
-| Tier | Price | Features |
-|------|-------|----------|
-| **Starter** | $297 | Basic chatbot, 5K interactions/month |
-| **Professional** | $597 | Advanced features, 25K interactions/month |
-| **Enterprise** | $1,497 | Full customization, unlimited interactions |
-
-### License Options
-- **Single Site License**: Use on one domain
-- **Multi-Site License**: Use on up to 5 domains
-- **Developer License**: Unlimited sites for agencies
-- **White Label License**: Remove branding, full customization
 
 ## 🤝 Support
 
-### Documentation
-- 📖 [Complete Documentation](https://docs.aivio.co.in/chatbot)
-- 🎥 [Video Tutorials](https://youtube.com/aivio-tutorials)
-- 💬 [Community Forum](https://community.aivio.co.in)
-- 📧 [Email Support](mailto:support@aivio.co.in)
 
-### Support Channels
-- **Email**: support@aivio.co.in
-- **Discord**: [Join our community](https://discord.gg/aivio)
-- **GitHub Issues**: [Report bugs](https://github.com/YOUR_USERNAME/aivio-chatbot-product/issues)
-- **Live Chat**: Available on our website
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
 ### Commercial Usage
 For commercial applications, please refer to our [Commercial License Agreement](COMMERCIAL_LICENSE.md).
@@ -446,6 +359,6 @@ If this project helped you, please consider:
 
 **Built with ❤️ for the AI community**
 
-[Website](https://aivio.co.in) • [Documentation](https://docs.aivio.co.in) • [Support](mailto:support@aivio.co.in) • [Twitter](https://twitter.com/aivio_official)
+[Website](https://aivio.co.in) 
 
 </div>
