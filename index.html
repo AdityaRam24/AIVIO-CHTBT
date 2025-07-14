@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIVIO AI Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .demo-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+        }
+
+        .demo-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .demo-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        /* Chatbot Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-button:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-window {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        .chat-window.open {
+            display: flex;
+        }
+
+        .chat-header {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .chat-info h3 {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .chat-info p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .chat-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+        }
+
+        .stats-bar {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 8px 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-number {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: #f9fafb;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .bot-message-avatar {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+        }
+
+        .user-message-avatar {
+            background: linear-gradient(45deg, #10b981, #3b82f6);
+        }
+
+        .message-bubble {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .bot-message {
+            background: white;
+            color: black;
+        }
+
+        .user-message {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            color: white;
+        }
+
+        .message-text {
+            white-space: pre-wrap;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+            opacity: 0.7;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .typing-dots {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #6b7280;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.16s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.32s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .quick-actions {
+            padding: 8px 16px;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .quick-btn {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .input-area {
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 8px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            background: #f9fafb;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .send-btn {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .send-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 480px) {
+            .chat-window {
+                width: 100vw;
+                height: 100vh;
+                bottom: 0;
+                right: 0;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Demo Content -->
+    <div class="demo-content">
+        <h1>🤖 AIVIO AI Chatbot Demo</h1>
+        <p>Click the chat button to experience our AI assistant!</p>
+        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin-top: 20px;">
+            <h3>Features:</h3>
+            <ul style="list-style: none; margin-top: 10px;">
+                <li>🔍 AI Tool Recommendations</li>
+                <li>📈 Trending AI Insights</li>
+                <li>❓ Platform Navigation Help</li>
+                <li>🌙 Dark/Light Mode</li>
+                <li>📱 Mobile Responsive</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Chatbot -->
+    <div class="chatbot-container">
+        <!-- Chat Button -->
+        <button class="chat-button" id="chatButton">
+            🚀
+        </button>
+
+        <!-- Chat Window -->
+        <div class="chat-window" id="chatWindow">
+            <!-- Header -->
+            <div class="chat-header">
+                <div class="chat-header-left">
+                    <div class="bot-avatar">🤖</div>
+                    <div class="chat-info">
+                        <h3>AIVIO AI Assistant</h3>
+                        <p>🟢 Online • <span id="chatCount">0</span> chats</p>
+                    </div>
+                </div>
+                <div class="chat-controls">
+                    <button class="control-btn" id="themeBtn">🌙</button>
+                    <button class="control-btn" id="closeBtn">❌</button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-number" id="toolsCount">0</div>
+                    <div>Tools Suggested</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="questionsCount">0</div>
+                    <div>Questions Answered</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="interactionsCount">0</div>
+                    <div>Total Chats</div>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="messages-container" id="messagesContainer">
+                <!-- Messages will be added here -->
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="quick-buttons">
+                    <button class="quick-btn" onclick="sendQuickMessage('Find AI tools for content creation')">🔍 Find Tools</button>
+                    <button class="quick-btn" onclick="sendQuickMessage('Show me latest AI trends')">📈 Trends</button>
+                    <button class="quick-btn" onclick="sendQuickMessage('How to use AIVIO?')">❓ Help</button>
+                </div>
+            </div>
+
+            <!-- Input -->
+            <div class="input-area">
+                <input type="text" class="message-input" id="messageInput" placeholder="Ask about AI tools, trends, or how to use AIVIO...">
+                <button class="send-btn" id="sendBtn">📤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const aiTools = [
+            {
+                id: '1',
+                name: 'ChatGPT',
+                description: 'Advanced conversational AI for writing, coding, and analysis',
+                category: 'Conversational AI',
+                pricing: 'Free / $20/month',
+                rating: 4.8,
+                users: '100M+'
+            },
+            {
+                id: '2',
+                name: 'Midjourney',
+                description: 'AI-powered image generation tool for creating artwork',
+                category: 'Image Generation',
+                pricing: '$10-60/month',
+                rating: 4.7,
+                users: '15M+'
+            },
+            {
+                id: '3',
+                name: 'Claude',
+                description: 'Constitutional AI assistant for helpful conversations',
+                category: 'Conversational AI',
+                pricing: 'Free / $20/month',
+                rating: 4.6,
+                users: '5M+'
+            },
+            {
+                id: '4',
+                name: 'DALL-E 3',
+                description: 'OpenAI\'s advanced text-to-image model',
+                category: 'Image Generation',
+                pricing: '$15-50/month',
+                rating: 4.5,
+                users: '10M+'
+            }
+        ];
+
+        const trends = [
+            {
+                title: 'Multimodal AI Integration',
+                description: 'AI systems combining text, image, and audio capabilities',
+                growth: 340,
+                impact: 'High'
+            },
+            {
+                title: 'AI Agent Automation',
+                description: 'Autonomous AI agents for complex task execution',
+                growth: 280,
+                impact: 'High'
+            },
+            {
+                title: 'Creative AI Tools',
+                description: 'AI adoption in creative industries for content generation',
+                growth: 225,
+                impact: 'High'
+            }
+        ];
+
+        const faqs = [
+            {
+                question: 'How do I find the right AI tool?',
+                answer: 'Start by defining your use case, browse categories, and read reviews. Consider pricing and ease of use.',
+                keywords: ['find', 'choose', 'select']
+            },
+            {
+                question: 'Are these AI tools free?',
+                answer: 'Many offer free tiers with limited features. We indicate pricing for each tool clearly.',
+                keywords: ['free', 'cost', 'pricing']
+            },
+            {
+                question: 'How to get started with AIVIO?',
+                answer: 'Browse tool categories, read reviews, and use our search. Chat with me for personalized recommendations!',
+                keywords: ['started', 'begin', 'how to use']
+            }
+        ];
+
+        // State
+        let messages = [];
+        let stats = {
+            interactions: 0,
+            toolsRecommended: 0,
+            questionsAnswered: 0
+        };
+        let isDark = false;
+
+        // DOM Elements
+        const chatButton = document.getElementById('chatButton');
+        const chatWindow = document.getElementById('chatWindow');
+        const closeBtn = document.getElementById('closeBtn');
+        const themeBtn = document.getElementById('themeBtn');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            addMessage('bot', "👋 Welcome to AIVIO! I'm your AI assistant. I can help you discover AI tools, share trending insights, and guide you through our platform. How can I help you today?");
+        });
+
+        // Event Listeners
+        chatButton.addEventListener('click', () => {
+            chatWindow.classList.add('open');
+            chatButton.style.display = 'none';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            chatWindow.classList.remove('open');
+            chatButton.style.display = 'flex';
+        });
+
+        themeBtn.addEventListener('click', toggleTheme);
+
+        sendBtn.addEventListener('click', sendMessage);
+
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Functions
+        function addMessage(sender, text) {
+            const message = {
+                id: Date.now().toString(),
+                sender,
+                text,
+                timestamp: new Date()
+            };
+            messages.push(message);
+            renderMessage(message);
+            scrollToBottom();
+        }
+
+        function renderMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = `message-avatar ${message.sender}-message-avatar`;
+            avatar.textContent = message.sender === 'bot' ? '🤖' : '👤';
+            
+            const bubble = document.createElement('div');
+            bubble.className = `message-bubble ${message.sender}-message`;
+            
+            const text = document.createElement('div');
+            text.className = 'message-text';
+            text.textContent = message.text;
+            
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            time.textContent = message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            bubble.appendChild(text);
+            bubble.appendChild(time);
+            
+            if (message.sender === 'bot') {
+                const actions = document.createElement('div');
+                actions.className = 'message-actions';
+                actions.innerHTML = `
+                    <button class="action-btn" onclick="copyMessage('${message.id}')" title="Copy">📋</button>
+                    <button class="action-btn" title="Like">👍</button>
+                `;
+                bubble.appendChild(actions);
+            }
+            
+            if (message.sender === 'user') {
+                messageDiv.appendChild(bubble);
+                messageDiv.appendChild(avatar);
+            } else {
+                messageDiv.appendChild(avatar);
+                messageDiv.appendChild(bubble);
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+        }
+
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text) return;
+            
+            addMessage('user', text);
+            messageInput.value = '';
+            
+            stats.interactions++;
+            updateStats();
+            
+            showTyping();
+            
+            setTimeout(() => {
+                hideTyping();
+                const response = processMessage(text);
+                addMessage('bot', response);
+            }, 1500);
+        }
+
+        function sendQuickMessage(text) {
+            messageInput.value = text;
+            sendMessage();
+        }
+
+        function processMessage(input) {
+            const text = input.toLowerCase().trim();
+            
+            // Tool recommendations
+            if (text.includes('tool') || text.includes('find') || text.includes('ai') || text.includes('chatgpt') || text.includes('midjourney')) {
+                let matchingTools = [];
+                
+                if (text.includes('writing') || text.includes('content')) {
+                    matchingTools = aiTools.filter(tool => tool.category.includes('Conversational'));
+                } else if (text.includes('image') || text.includes('art')) {
+                    matchingTools = aiTools.filter(tool => tool.category.includes('Image'));
+                } else {
+                    matchingTools = aiTools.slice(0, 3);
+                }
+                
+                stats.toolsRecommended += matchingTools.length;
+                updateStats();
+                
+                return `🔥 Here are my top AI tool recommendations:\n\n${matchingTools.map((tool, index) => 
+                    `${index + 1}. **${tool.name}** ⭐ ${tool.rating}/5\n` +
+                    `📝 ${tool.description}\n` +
+                    `💰 Pricing: ${tool.pricing}\n` +
+                    `👥 Users: ${tool.users}\n` +
+                    `🏷️ Category: ${tool.category}\n\n`
+                ).join('')}💡 Want more specific recommendations? Try asking:\n• "Find writing tools"\n• "Show image generation tools"`;
+            }
+            
+            // FAQ
+            if (text.includes('how') || text.includes('help') || text.includes('free') || text.includes('cost')) {
+                stats.questionsAnswered++;
+                updateStats();
+                
+                const faq = faqs.find(f => f.keywords.some(k => text.includes(k))) || faqs[0];
+                return `❓ **${faq.question}**\n\n✅ ${faq.answer}\n\n🔗 **Related Questions:**\n• How to compare AI tools?\n• What are the pricing models?\n• How to get started with AIVIO?`;
+            }
+            
+            // Trends
+            if (text.includes('trend') || text.includes('latest') || text.includes('new')) {
+                stats.questionsAnswered++;
+                updateStats();
+                
+                return `🚀 **Latest AI Trends & Market Insights:**\n\n${trends.map((trend, index) => 
+                    `${index + 1}. **${trend.title}** 🔥\n` +
+                    `📊 ${trend.description}\n` +
+                    `📈 Growth Rate: +${trend.growth}%\n` +
+                    `🎯 Market Impact: ${trend.impact}\n\n`
+                ).join('')}🔮 **Future Predictions:**\n• AI agents will automate 40% of business tasks by 2025\n• Multimodal AI will become the new standard`;
+            }
+            
+            // Default
+            return `👋 **Welcome to AIVIO AI Assistant!**\n\nI can help you with:\n\n🤖 **AI Tool Discovery**\n• Find tools for writing, design, business\n• Compare features and pricing\n• Get personalized recommendations\n\n📈 **Market Insights**\n• Latest AI trends and growth data\n• Industry predictions and analysis\n\n📚 **Platform Guidance**\n• How to use AIVIO effectively\n• Understanding tool categories\n\n💬 **Try asking me:**\n• "Show me writing tools"\n• "Latest AI trends"\n• "Are there free AI tools?"\n\nWhat would you like to explore? 🚀`;
+        }
+
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typingIndicator';
+            typingDiv.className = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="message-avatar bot-message-avatar">🤖</div>
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+
+        function updateStats() {
+            document.getElementById('chatCount').textContent = stats.interactions;
+            document.getElementById('toolsCount').textContent = stats.toolsRecommended;
+            document.getElementById('questionsCount').textContent = stats.questionsAnswered;
+            document.getElementById('interactionsCount').textContent = stats.interactions;
+        }
+
+        function scrollToBottom() {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function toggleTheme() {
+            isDark = !isDark;
+            themeBtn.textContent = isDark ? '☀️' : '🌙';
+            // Theme switching logic would go here
+        }
+
+        function copyMessage(messageId) {
+            const message = messages.find(m => m.id === messageId);
+            if (message) {
+                navigator.clipboard.writeText(message.text);
+                alert('Copied to clipboard!');
+            }
+        }
+    </script>
+</body>
+</html>
